@@ -1,10 +1,10 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React from 'react'
+import { connect } from 'react-redux'
 
-import { NavLink } from 'react-router-dom';
-import { MDBListGroup, MDBListGroupItem, MDBIcon } from 'mdbreact';
+import { NavLink } from 'react-router-dom'
+import { MDBListGroup, MDBListGroupItem, MDBIcon } from 'mdbreact'
 
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.png'
 
 const sidebar = ({ projects }) => (
   <div className="sidebar-fixed position-fixed">
@@ -15,7 +15,7 @@ const sidebar = ({ projects }) => (
       <NavLink to="/" exact activeClassName="activeClass">
         <MDBListGroupItem>
           <MDBIcon icon="list" className="mr-3" />
-            Projects
+          Projects
         </MDBListGroupItem>
       </NavLink>
       {
@@ -23,15 +23,15 @@ const sidebar = ({ projects }) => (
           <NavLink key={item._id} to={`/${item._id}`} activeClassName="activeClass">
             <MDBListGroupItem>
               <MDBIcon icon="edit" className="mr-3" />
-              { item.title }
+              {item.title}
             </MDBListGroupItem>
           </NavLink>
         ))
       }
     </MDBListGroup>
   </div>
-);
+)
 
-const mapStateToProps = (state) => ({ projects: state.projects });
+const mapStateToProps = (state) => ({ projects: state.projects })
 
-export default connect(mapStateToProps)(sidebar);
+export default connect(mapStateToProps)(sidebar)

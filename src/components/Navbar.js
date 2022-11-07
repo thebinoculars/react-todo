@@ -1,45 +1,45 @@
-import React from 'react';
-import axios from 'axios';
+import React from 'react'
+import axios from 'axios'
 
 import {
   MDBNavbar, MDBNavbarBrand, MDBNavbarNav, MDBNavbarToggler, MDBCollapse, MDBNavItem, MDBNavLink,
-} from 'mdbreact';
+} from 'mdbreact'
 
-import store from '../store';
+import store from '../store'
 
 export default class Navbar extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       collapse: false,
-    };
+    }
   }
 
   componentDidMount() {
-    store.dispatch({ type: 'getData' });
+    store.dispatch({ type: 'getData' })
   }
 
   toggleNavbar() {
-    const { collapse } = this.state;
+    const { collapse } = this.state
     this.setState({
       collapse: !collapse,
-    });
+    })
   }
 
   addProject() {
     const data = {
       title: 'New Project',
       tasks: [],
-    };
+    }
     axios.post('/api/create', data)
       .then(() => {
-        store.dispatch({ type: 'getData' });
-        this.setState({ collapse: false });
-      });
+        store.dispatch({ type: 'getData' })
+        this.setState({ collapse: false })
+      })
   }
 
   render() {
-    const { collapse } = this.state;
+    const { collapse } = this.state
 
     return (
       <MDBNavbar className="flexible-navbar" light expand="md" scrolling>
@@ -60,6 +60,6 @@ export default class Navbar extends React.Component {
           </MDBNavbarNav>
         </MDBCollapse>
       </MDBNavbar>
-    );
+    )
   }
 }

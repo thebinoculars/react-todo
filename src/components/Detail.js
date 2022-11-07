@@ -1,54 +1,54 @@
-import React from 'react';
-import moment from 'moment';
-import axios from 'axios';
+import React from 'react'
+import moment from 'moment'
+import axios from 'axios'
 
-import Nestable from 'react-nestable';
+import Nestable from 'react-nestable'
 import {
   MDBBtn, MDBIcon, MDBRow, MDBCol, MDBCardBody, MDBCard, MDBInput,
-} from 'mdbreact';
+} from 'mdbreact'
 
-import Modal from './Modal';
-import Task from './Task';
+import Modal from './Modal'
+import Task from './Task'
 
-import store from '../store';
+import store from '../store'
 
-import 'react-quill/dist/quill.snow.css';
-import 'react-datepicker/dist/react-datepicker.css';
+import 'react-quill/dist/quill.snow.css'
+import 'react-datepicker/dist/react-datepicker.css'
 
 export default class Detail extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       modal: false,
       title: '',
       id: null,
       list: [],
       currentTask: {},
-    };
+    }
   }
 
   componentDidMount() {
-    const { match: { params: { id } } } = this.props;
-    this.fetch(id);
+    const { match: { params: { id } } } = this.props
+    this.fetch(id)
   }
 
   componentDidUpdate(prevProps) {
-    const { match: { params: { id } } } = this.props;
+    const { match: { params: { id } } } = this.props
     if (prevProps.match.params.id !== id) {
-      this.fetch(id);
+      this.fetch(id)
     }
   }
 
   fetch(id) {
-    const { history } = this.props;
-    axios.get(`/api/detail/${id}`)
+    const { history } = this.props
+    axios.get('/api/detail', { params: { id } })
       .then((res) => {
-        const list = this.convert(res.data.tasks);
+        const list = this.convert(res.data.tasks)
         this.setState(() => ({
           title: res.data.title, id, list,
-        }));
+        }))
       })
-      .catch(() => { history.push('/'); });
+      .catch(() => { history.push('/') })
   }
 
   convert(tasks, parent = 0) {
@@ -59,73 +59,73 @@ export default class Detail extends React.Component {
         parent,
         createdAt: now.createdAt || moment().valueOf(),
         description: now.description || '',
-      };
-      let data = [...prev, ...[item]];
-      if (item.tasks) {
-        data = [...data, ...this.convert(item.tasks, item.id)];
       }
-      return data;
-    }, []);
+      let data = [...prev, ...[item]]
+      if (item.tasks) {
+        data = [...data, ...this.convert(item.tasks, item.id)]
+      }
+      return data
+    }, [])
   }
 
   updateList(tasks, parent = 0) {
     return tasks.filter((item) => item.parent === parent).map((item) => ({
       ...item,
       tasks: this.updateList(tasks, item.id),
-    }));
+    }))
   }
 
   changeTitle(e) {
     if (e.target.value) {
       this.setState({
         title: e.target.value,
-      });
+      })
     }
   }
 
   reOrder(data) {
-    const list = this.convert(data);
-    this.setState({ list });
-    this.saveProject();
+    const list = this.convert(data)
+    this.setState({ list })
+    this.saveProject()
   }
 
   saveProject(redirect = false) {
-    const { title, list, id } = this.state;
-    const tasks = this.updateList(list);
-    axios.post(`/api/update/${id}`, { title, tasks })
+    const { title, list, id } = this.state
+    const tasks = this.updateList(list)
+    axios.post('/api/update', { title, tasks }, { params: { id } })
       .then(() => {
         if (redirect) {
-          store.dispatch({ type: 'getData' });
+          store.dispatch({ type: 'getData' })
         }
-      });
+      })
   }
 
   toggle() {
-    const { modal } = this.state;
+    const { modal } = this.state
     this.setState({
       modal: !modal,
-    });
+    })
   }
 
   showTask(id) {
-    const { list } = this.state;
-    const task = list.find((item) => item.id === id);
-    if (!task) return;
+    const { list } = this.state
+    const task = list.find((item) => item.id === id)
+    if (!task) return
     this.setState({
       currentTask: task,
-    });
-    this.toggle();
+    })
+    this.toggle()
   }
 
   editTask(data) {
-    const { currentTask } = this.state;
+    const { currentTask } = this.state
     this.setState({
       currentTask: { ...currentTask, ...data },
-    });
+    })
   }
 
   addTask(parent = 0) {
-    const { list } = this.state;
+    const { list } = this.state
     const task = {
       id: Math.random().toString(36).substring(10),
       title: 'New Task',
@@ -133,42 +133,42 @@ export default class Detail extends React.Component {
       priority: 4,
       description: '',
       parent,
-    };
-    list.push(task);
-    this.setState({ list });
-    this.saveProject();
+    }
+    list.push(task)
+    this.setState({ list })
+    this.saveProject()
   }
 
   deleteTask(id) {
-    const { list } = this.state;
-    const taskIndex = list.findIndex((item) => item.id === id);
-    if (taskIndex === -1) return;
-    list.splice(taskIndex, 1);
-    this.setState({ list });
-    this.saveProject();
+    const { list } = this.state
+    const taskIndex = list.findIndex((item) => item.id === id)
+    if (taskIndex === -1) return
+    list.splice(taskIndex, 1)
+    this.setState({ list })
+    this.saveProject()
   }
 
   completeTask(id) {
-    const { list } = this.state;
-    const taskIndex = list.findIndex((item) => item.id === id);
-    if (taskIndex === -1) return;
-    const completed = list[taskIndex].completedAt;
-    list[taskIndex].completedAt = !completed ? moment().valueOf() : null;
-    this.setState({ list });
-    this.saveProject();
+    const { list } = this.state
+    const taskIndex = list.findIndex((item) => item.id === id)
+    if (taskIndex === -1) return
+    const completed = list[taskIndex].completedAt
+    list[taskIndex].completedAt = !completed ? moment().valueOf() : null
+    this.setState({ list })
+    this.saveProject()
   }
 
   saveTask(id) {
-    const { list, currentTask } = this.state;
-    const taskIndex = list.findIndex((item) => item.id === id);
+    const { list, currentTask } = this.state
+    const taskIndex = list.findIndex((item) => item.id === id)
     if (taskIndex === -1) {
-      this.toggle();
-      return;
+      this.toggle()
+      return
     }
-    list[taskIndex] = currentTask;
-    this.setState({ list });
-    this.toggle();
-    this.saveProject();
+    list[taskIndex] = currentTask
+    this.setState({ list })
+    this.toggle()
+    this.saveProject()
   }
 
   renderItem(params) {
@@ -180,15 +180,15 @@ export default class Detail extends React.Component {
         addTask={(e) => this.addTask(e)}
         deleteTask={(e) => this.deleteTask(e)}
       />
-    );
+    )
   }
 
   render() {
     const {
       title, list, modal, currentTask,
-    } = this.state;
-    const items = this.updateList(list);
-    const renderCollapseIcon = ({ isCollapsed }) => (isCollapsed ? <MDBIcon className="collapse-icon" icon="angle-down" /> : <MDBIcon className="collapse-icon" icon="angle-right" />);
+    } = this.state
+    const items = this.updateList(list)
+    const renderCollapseIcon = ({ isCollapsed }) => (isCollapsed ? <MDBIcon className="collapse-icon" icon="angle-down" /> : <MDBIcon className="collapse-icon" icon="angle-right" />)
     return (
       <MDBRow>
         <MDBCol md="12">
@@ -221,6 +221,6 @@ export default class Detail extends React.Component {
           </MDBCard>
         </MDBCol>
       </MDBRow>
-    );
+    )
   }
 }

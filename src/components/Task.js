@@ -1,16 +1,16 @@
-import React from 'react';
+import React from 'react'
 
 import {
   MDBDropdownToggle, MDBDropdown, MDBDropdownMenu, MDBDropdownItem, MDBIcon,
-} from 'mdbreact';
+} from 'mdbreact'
 
-const colors = ['red', 'orange', 'green', 'black'];
+const colors = ['red', 'orange', 'green', 'black']
 
 export default (props) => {
-  const { params: { handler, collapseIcon, item } } = props;
-  const completed = !!item.completedAt;
+  const { params: { handler, collapseIcon, item } } = props
+  const completed = !!item.completedAt
 
-  const color = colors[item.priority - 1];
+  const color = colors[item.priority - 1]
   return (
     <div className="task">
       {handler}
@@ -19,7 +19,7 @@ export default (props) => {
         <input type="checkbox" className="checkbox" checked={completed} onChange={() => props.completeTask(item.id)} />
       </span>
       <span className="task-title" style={{ color, textDecoration: completed ? 'line-through' : 'none' }}>
-        { item.title }
+        {item.title}
       </span>
       <MDBDropdown size="sm" className="actions">
         <MDBDropdownToggle color="transparent">
@@ -32,5 +32,5 @@ export default (props) => {
         </MDBDropdownMenu>
       </MDBDropdown>
     </div>
-  );
-};
+  )
+}
