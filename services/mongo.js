@@ -5,7 +5,7 @@ const { Schema } = mongoose
 
 const DB = process.env.DB || 'mongodb://localhost:27017/todo'
 
-mongoose.connect(DB, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
+mongoose.connect(DB)
 
 const Task = new Schema()
 
